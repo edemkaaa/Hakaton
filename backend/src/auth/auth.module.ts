@@ -7,8 +7,6 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { jwtConstants } from './constants';
-import { EsiaController } from './controllers/esia.controller';
-import { EsiaService } from './services/esia.service';
 
 @Module({
   imports: [
@@ -22,11 +20,9 @@ import { EsiaService } from './services/esia.service';
   ],
   controllers: [
     AuthController,
-    EsiaController,
   ],
   providers: [
     AuthService,
-    EsiaService,
     JwtStrategy,
   ],
   exports: [AuthService],

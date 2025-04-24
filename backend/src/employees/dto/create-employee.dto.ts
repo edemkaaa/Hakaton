@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsArray, IsBoolean, ValidateNested, IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsOptional, IsArray, IsBoolean, ValidateNested, IsNumber, IsUrl, ArrayMinSize, IsPositive } from 'class-validator';
+import { Type, Transform} from 'class-transformer'; 
 
 class WorkScheduleDto {
   @ApiProperty({ 
@@ -48,7 +48,9 @@ export class CreateEmployeeDto {
     description: 'ID пользователя в системе',
     example: 1
   })
-  @IsNumber()
+  @IsNumber({}, { message: 'ID пользователя должен быть числом' })
+  @IsPositive({ message: 'ID пользователя должен быть положительным числом' })
+  @Type(() => Number)
   userId: number;
 
   @ApiProperty({ 
@@ -57,7 +59,8 @@ export class CreateEmployeeDto {
     required: false
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Должность должна быть строкой' })
+  @Transform(({ value }) => value?.trim())
   position?: string;
 
   @ApiProperty({ 
@@ -66,7 +69,8 @@ export class CreateEmployeeDto {
     required: false
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Ссылка на фото должна быть строкой' })
+  @IsUrl({}, { message: 'Некорректный формат URL' })
   photo?: string;
 
   @ApiProperty({ 
@@ -74,15 +78,18 @@ export class CreateEmployeeDto {
     example: [1, 2, 3],
     type: [Number]
   })
-  @IsArray()
-  @IsNumber({}, { each: true })
+  @IsArray({ message: 'Список услуг должен быть массивом' })
+  @ArrayMinSize(1, { message: 'Необходимо указать хотя бы одну услугу' })
+  @IsNumber({}, { each: true, message: 'ID услуги должен быть числом' })
+  @IsPositive({ each: true, message: 'ID услуги должен быть положительным числом' })
+  @Type(() => Number)
   serviceIds: number[];
 
   @ApiProperty({ 
     description: 'Расписание работы',
     type: [WorkScheduleDto]
   })
-  @IsArray()
+  @IsArray({ message: 'Расписание должно быть массивом' })
   @ValidateNested({ each: true })
   @Type(() => WorkScheduleDto)
   workSchedule: WorkScheduleDto[];
@@ -93,6 +100,6 @@ export class CreateEmployeeDto {
     default: true
   })
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: 'Статус активности должен быть логическим значением' })
   isActive?: boolean;
 }

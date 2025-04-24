@@ -63,6 +63,16 @@ export class SeederService {
         description: 'Услуги для предпринимателей',
         isActive: true,
       },
+      {
+        name: 'Документы и справки',
+        description: 'Оформление и выдача документов',
+        isActive: true,
+      },
+      {
+        name: 'Жилищные вопросы',
+        description: 'Консультации по жилищным вопросам',
+        isActive: true,
+      }
     ];
 
     for (const direction of directions) {
@@ -85,7 +95,7 @@ export class SeederService {
         description: 'Консультация специалиста по вопросам землепользования',
         duration: 30,
         isActive: true,
-        direction: directions[0],
+        direction: directions.find(d => d.name === 'Земельные вопросы'),
         workingHours: {
           monday: { start: '09:00', end: '18:00' },
           tuesday: { start: '09:00', end: '18:00' },
@@ -99,7 +109,7 @@ export class SeederService {
         description: 'Помощь в оформлении социальных выплат и пособий',
         duration: 45,
         isActive: true,
-        direction: directions[1],
+        direction: directions.find(d => d.name === 'Социальные услуги'),
         workingHours: {
           monday: { start: '09:00', end: '18:00' },
           tuesday: { start: '09:00', end: '18:00' },
@@ -113,7 +123,7 @@ export class SeederService {
         description: 'Помощь в регистрации ИП или ООО',
         duration: 60,
         isActive: true,
-        direction: directions[2],
+        direction: directions.find(d => d.name === 'Предпринимательство'),
         workingHours: {
           monday: { start: '09:00', end: '18:00' },
           tuesday: { start: '09:00', end: '18:00' },
@@ -121,7 +131,7 @@ export class SeederService {
           thursday: { start: '09:00', end: '18:00' },
           friday: { start: '09:00', end: '18:00' }
         }
-      },
+      }
     ];
 
     for (const service of services) {

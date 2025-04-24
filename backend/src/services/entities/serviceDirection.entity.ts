@@ -1,20 +1,20 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Service } from './service.entity';
 
-@Entity()
+@Entity('service_directions')
 export class ServiceDirection {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  name: string;
+    @Column()
+    name: string;
 
-  @Column()
-  description: string;
+    @Column({ nullable: true })
+    description: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+    @Column({ default: true })
+    isActive: boolean;
 
-  @OneToMany(() => Service, service => service.direction)
-  services: Service[];
+    @OneToMany(() => Service, service => service.direction)
+    services: Service[];
 }

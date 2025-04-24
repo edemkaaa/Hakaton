@@ -27,6 +27,7 @@
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run -d ormconfig.js",
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert -d ormconfig.js",
+    "migration:show": "ts-node ./node_modules/typeorm/cli.js migration:show -d ormconfig.js",
     "db:setup": "npm run schema:drop && npm run migration:run && npm run seed",
     "seed": "ts-node -r tsconfig-paths/register src/cli.ts"
   },

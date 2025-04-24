@@ -23,15 +23,15 @@ export class NotificationsService {
     });
   }
 
-  async markAsRead(id: number): Promise<Notification> {
+  async markAsRead(id: number) {
     const notification = await this.notificationRepository.findOne({
-      where: { id },
+      where: { id }
     });
-    
+
     if (!notification) {
-      throw new NotFoundException(`Notification with ID ${id} not found`);
+      throw new NotFoundException('Уведомление не найдено');
     }
-    
+
     notification.isRead = true;
     return this.notificationRepository.save(notification);
   }

@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Appointment } from '../../appointments/entities/appointment.entity';
 
-@Entity()
+@Entity('users') 
 export class User {
   @ApiProperty({ 
     description: 'Уникальный идентификатор пользователя',
@@ -29,7 +29,7 @@ export class User {
     description: 'Отчество пользователя',
     example: 'Иванович'
   })
-  @Column()
+  @Column({ nullable: true })
   middleName: string;
 
   @ApiProperty({ 

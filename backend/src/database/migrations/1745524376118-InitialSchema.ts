@@ -33,9 +33,32 @@ export class InitialSchema1745524376118 implements MigrationInterface {
                     type: "varchar"
                 },
                 {
+                    name: "middleName",
+                    type: "varchar",
+                    isNullable: true
+                },
+                {
+                    name: "role",
+                    type: "enum",
+                    enum: ['user', 'employee', 'admin'],
+                    default: "'user'"
+                },
+                {
+                    name: "document",
+                    type: "jsonb",
+                    isNullable: true
+                },
+                {
+                    name: "esiaId",
+                    type: "varchar",
+                    isNullable: true,
+                    isUnique: true
+                },
+                {
                     name: "phone",
                     type: "varchar",
-                    isUnique: true
+                    isUnique: true,
+                    isNullable: true
                 },
                 {
                     name: "isActive",
@@ -74,6 +97,11 @@ export class InitialSchema1745524376118 implements MigrationInterface {
                     name: "description",
                     type: "varchar",
                     isNullable: true
+                },
+                {
+                    name: "isActive",
+                    type: "boolean",
+                    default: true
                 }
             ]
         }), true);
@@ -139,26 +167,52 @@ export class InitialSchema1745524376118 implements MigrationInterface {
                     type: "varchar"
                 },
                 {
-                    name: "email",
+                    name: "middleName",
                     type: "varchar",
-                    isUnique: true
-                },
-                {
-                    name: "phone",
-                    type: "varchar",
-                    isUnique: true
+                    isNullable: true
                 },
                 {
                     name: "position",
                     type: "varchar"
                 },
                 {
+                    name: "email",
+                    type: "varchar"
+                },
+                {
+                    name: "phone",
+                    type: "varchar"
+                },
+                {
                     name: "isActive",
                     type: "boolean",
                     default: true
+                },
+                {
+                    name: "photo",
+                    type: "varchar",
+                    isNullable: true
+                },
+                {
+                    name: "workSchedule",
+                    type: "json",
+                    isNullable: true
+                },
+                {
+                    name: "user_id",
+                    type: "int",
+                    isNullable: true
+                }
+            ],
+            foreignKeys: [
+                {
+                    columnNames: ["user_id"],
+                    referencedTableName: "users",
+                    referencedColumnNames: ["id"],
+                    onDelete: "SET NULL"
                 }
             ]
-        }), true);
+        }));
 
         // Appointments table
         await queryRunner.createTable(new Table({
@@ -323,6 +377,14 @@ export class InitialSchema1745524376118 implements MigrationInterface {
         await queryRunner.dropTable("notifications");
         await queryRunner.dropTable("verification_codes");
         await queryRunner.dropTable("appointments");
+        // Удаление внешнего ключа перед удалением таблицы
+        const table = await queryRunner.getTable("employees");
+        const foreignKey = table?.foreignKeys.find(fk => fk.columnNames.indexOf("user_id") !== -1);
+        if (!foreignKey) {
+            throw new Error("Foreign key for user_id not found");
+        }
+        await queryRunner.dropForeignKey("employees", foreignKey);
+        
         await queryRunner.dropTable("employees");
         await queryRunner.dropTable("services");
         await queryRunner.dropTable("service_directions");

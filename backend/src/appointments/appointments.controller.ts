@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, Request } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentStatusDto } from './dto/updateAppointment-status.dto';
@@ -60,5 +60,26 @@ export class AppointmentsController {
       verificationData.verificationId,
       verificationData.code
     );
+  }
+
+  @Get('statistics')
+  @ApiOperation({ summary: 'Получить статистику записей' })
+  getStatistics(@Request() req) {
+    return this.appointmentsService.getStatistics(req.user.id);
+  }
+
+  @Post(':id/reschedule')
+  @ApiOperation({ summary: 'Перенести запись' })
+  rescheduleAppointment(
+    @Param('id') id: number,
+    @Body('newDateTime') newDateTime: string
+  ) {
+    return this.appointmentsService.rescheduleAppointment(id, new Date(newDateTime));
+  }
+
+  @Post(':id/cancel')
+  @ApiOperation({ summary: 'Отменить запись' })
+  cancelAppointment(@Param('id') id: number) {
+    return this.appointmentsService.updateStatus(id, { status: 'cancelled' });
   }
 }

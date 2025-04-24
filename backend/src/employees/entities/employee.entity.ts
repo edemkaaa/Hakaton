@@ -1,25 +1,50 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Service } from '../../services/entities/service.entity';
 import { User } from '../../users/entities/user.entity';
 import { Appointment } from '../../appointments/entities/appointment.entity';
 
-@Entity()
+@Entity('employees')
 export class Employee {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  user: User;
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
 
   @Column({ nullable: true })
+  middleName: string;
+
+  @Column()
   position: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  phone: string;
+
+  @Column({ default: true })
+  isActive: boolean;
 
   @Column({ nullable: true })
   photo: string;
 
-  @ManyToMany(() => Service, service => service.employees)
-  services: Service[];
+  @ManyToMany(() => Service)  
+  @JoinTable({
+    name: 'employee_services',  
+    joinColumn: { 
+      name: 'employee_id',  
+      referencedColumnName: 'id'  
+    },
+    inverseJoinColumn: { 
+      name: 'service_id', 
+      referencedColumnName: 'id'  
+    },
+  })
+  services: Service[];  
 
   @Column({ type: 'json' })
   workSchedule: {
@@ -33,6 +58,10 @@ export class Employee {
   @OneToMany(() => Appointment, appointment => appointment.employee)
   appointments: Appointment[];
 
-  @Column({ default: true })
-  isActive: boolean;
+  @OneToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column({ name: 'user_id', nullable: true })
+  userId: number;
 }

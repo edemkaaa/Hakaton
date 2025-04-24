@@ -15,6 +15,7 @@ import { SeedCommand, SeedCommandHandler } from './commands/seed.command';
 
 import { User } from './users/entities/user.entity';
 import { Service } from './services/entities/service.entity';
+import { Subservice } from './services/entities/subservice.entity';
 import { Employee } from './employees/entities/employee.entity';
 import { Appointment } from './appointments/entities/appointment.entity';
 import { VerificationCode } from './appointments/entities/verification-code.entity';
@@ -34,7 +35,7 @@ import { ServiceDirection } from './services/entities/serviceDirection.entity';
       username: process.env.DATABASE_USER || 'postgres',
       password: process.env.DATABASE_PASSWORD || 'postgres',
       database: process.env.DATABASE_NAME || 'appointment_system',
-      entities: [User, Service, Employee, Appointment, VerificationCode, Notification, ServiceDirection],
+      entities: [User, Service, Subservice, Employee, Appointment, VerificationCode, Notification, ServiceDirection],
       synchronize: false,  
     }),
     UsersModule,

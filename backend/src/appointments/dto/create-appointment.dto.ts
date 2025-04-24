@@ -1,5 +1,21 @@
-import { IsNumber, IsDateString, IsOptional } from 'class-validator';
+import { IsNumber, IsDateString, IsOptional, IsPositive, ValidateNested, IsObject, IsString, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+
+class AdditionalInfoDto {
+  @IsOptional()
+  @IsString({ message: 'Комментарий должен быть строкой' })
+  comment?: string;
+
+  @IsOptional()
+  @IsArray({ message: 'Документы должны быть массивом' })
+  @IsString({ each: true, message: 'Каждый документ должен быть строкой' })
+  documents?: string[];
+
+  @IsOptional()
+  @IsString({ message: 'Предпочитаемый язык должен быть строкой' })
+  preferredLanguage?: string;
+}
 
 export class CreateAppointmentDto {
   @ApiProperty({ 
@@ -7,7 +23,9 @@ export class CreateAppointmentDto {
     example: 1,
     type: Number
   })
-  @IsNumber()
+  @IsNumber({}, { message: 'ID пользователя должен быть числом' })
+  @IsPositive({ message: 'ID пользователя должен быть положительным числом' })
+  @Type(() => Number)
   userId: number;
 
   @ApiProperty({ 
@@ -15,7 +33,9 @@ export class CreateAppointmentDto {
     example: 1,
     type: Number
   })
-  @IsNumber()
+  @IsNumber({}, { message: 'ID специалиста должен быть числом' })
+  @IsPositive({ message: 'ID специалиста должен быть положительным числом' })
+  @Type(() => Number)
   employeeId: number;
 
   @ApiProperty({ 
@@ -23,7 +43,9 @@ export class CreateAppointmentDto {
     example: 1,
     type: Number
   })
-  @IsNumber()
+  @IsNumber({}, { message: 'ID услуги должен быть числом' })
+  @IsPositive({ message: 'ID услуги должен быть положительным числом' })
+  @Type(() => Number)
   serviceId: number;
 
   @ApiProperty({ 
@@ -31,7 +53,7 @@ export class CreateAppointmentDto {
     example: '2024-01-20T10:00:00.000Z',
     type: String
   })
-  @IsDateString()
+  @IsDateString({}, { message: 'Некорректный формат даты и времени' })
   appointmentTime: string;
 
   @ApiProperty({ 
@@ -41,8 +63,12 @@ export class CreateAppointmentDto {
       "documents": ["паспорт", "СНИЛС"],
       "preferredLanguage": "русский"
     },
-    required: false
+    required: false,
+    type: AdditionalInfoDto
   })
   @IsOptional()
-  additionalInfo?: any;
+  @IsObject({ message: 'Дополнительная информация должна быть объектом' })
+  @ValidateNested()
+  @Type(() => AdditionalInfoDto)
+  additionalInfo?: AdditionalInfoDto;
 }

@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, BadRequestException, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, In, MoreThan } from 'typeorm';
 import { Appointment } from './entities/appointment.entity';
 import { Employee } from '../employees/entities/employee.entity';
 import { Service } from '../services/entities/service.entity';
@@ -235,5 +235,61 @@ export class AppointmentsService {
     const appointmentData = JSON.parse(verification.appointmentData);
     // TODO: Создание записи через существующий метод
     return this.create(appointmentData);
+  }
+
+  async getStatistics(userId: number) {
+    const [upcoming, completed, services, specialists] = await Promise.all([
+      this.appointmentRepository.count({
+        where: {
+          user: { id: userId },
+          status: In(['pending', 'confirmed']),
+          startTime: MoreThan(new Date())
+        }
+      }),
+      this.appointmentRepository.count({
+        where: {
+          user: { id: userId },
+          status: 'completed'
+        }
+      }),
+      this.serviceRepository.count({
+        where: { isActive: true }
+      }),
+      this.employeeRepository.count({
+        where: { isActive: true }
+      })
+    ]);
+
+    return {
+      upcomingAppointments: upcoming,
+      completedAppointments: completed,
+      availableServices: services,
+      activeSpecialists: specialists
+    };
+  }
+
+  async rescheduleAppointment(id: number, newDateTime: Date) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['employee']
+    });
+    
+    if (!appointment) {
+      throw new NotFoundException('Запись не найдена');
+    }
+
+    const availability = await this.checkSlotAvailability(
+      appointment.employee.id,
+      newDateTime.toISOString()
+    );
+
+    if (!availability.available) {
+      throw new BadRequestException(availability.reason);
+    }
+
+    appointment.startTime = newDateTime;
+    appointment.endTime = new Date(newDateTime.getTime() + appointment.duration * 60000);
+
+    return this.appointmentRepository.save(appointment);
   }
 }

@@ -116,4 +116,28 @@ export class Appointment {
   })
   @Column({ type: 'jsonb', nullable: true })
   additionalInfo: any;
+
+  @ApiProperty({ 
+    description: 'Полное имя специалиста',
+    example: 'Иванов И.И.'
+  })
+  get specialistFullName(): string {
+    return `${this.employee.lastName} ${this.employee.firstName.charAt(0)}.${this.employee.middleName?.charAt(0) || ''}.`;
+  }
+
+  @ApiProperty({ 
+    description: 'Время в формате ЧЧ:ММ',
+    example: '12:00'
+  })
+  get formattedTime(): string {
+    return this.startTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  @ApiProperty({ 
+    description: 'Дата в формате ДД.ММ.YYYY',
+    example: '15.05.2024'
+  })
+  get formattedDate(): string {
+    return this.startTime.toLocaleDateString('ru-RU');
+  }
 }
