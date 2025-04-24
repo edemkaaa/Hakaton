@@ -35,7 +35,7 @@ import { ServiceDirection } from './services/entities/serviceDirection.entity';
       password: process.env.DATABASE_PASSWORD || 'postgres',
       database: process.env.DATABASE_NAME || 'appointment_system',
       entities: [User, Service, Employee, Appointment, VerificationCode, Notification, ServiceDirection],
-      synchronize: true,
+      synchronize: false,  
     }),
     UsersModule,
     AuthModule,

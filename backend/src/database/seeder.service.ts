@@ -167,11 +167,13 @@ export class SeederService {
     ];
 
     for (const employeeData of employees) {
-      const exists = await this.employeeRepository.findOne({
-        where: { email: employeeData.email } as any
-      });
+      const existingEmployee = await this.employeeRepository
+        .createQueryBuilder('employee')
+        .leftJoinAndSelect('employee.user', 'user')
+        .where('user.email = :email', { email: employeeData.email })
+        .getOne();
       
-      if (!exists) {
+      if (!existingEmployee) {
         const newEmployee = this.employeeRepository.create(employeeData);
         await this.employeeRepository.save(newEmployee);
         
